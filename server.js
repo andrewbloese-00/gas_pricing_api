@@ -1,11 +1,8 @@
 import http from "http"
 import { ScrapeGasBuddyAPI } from "./scraper.js";
+import { readFile } from "fs/promises";
 
-
-
-
-
-const PORT = 8080
+const PORT = process.env.PORT || 8080
 const CACHE_LIVE_MS = 1_800_000 //expire cached data every 30 mins
 const CACHE_CLEANUP_EVERY_N = 10
 /**@type {Map<string,PriceCacheItem>} */ const scraper_cache = new Map()
@@ -23,6 +20,17 @@ const server = http.createServer(async (req,res)=>{
             error: "Invalid request method. only GET supported"
         }))
     }
+
+    //handle root
+    if(url.pathname == "/"){
+        const html = await readFile("./index.html",{
+            encoding: "utf-8"
+        })
+        res.writeHead(200)
+        return res.end(html)
+        
+    }
+
 
     //only route is "gas_price"
     if(url.pathname != "/gas_price"){
