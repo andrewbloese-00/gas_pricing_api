@@ -3,6 +3,8 @@ import { ScrapeGasBuddyAPI } from "./scraper.js";
 import { readFile } from "fs/promises";
 
 const PORT = process.env.PORT || 8080
+const BASEURL = process.env.VERCEL_URL || "http://localhost:8080"
+
 const CACHE_LIVE_MS = 1_800_000 //expire cached data every 30 mins
 const CACHE_CLEANUP_EVERY_N = 10
 /**@type {Map<string,PriceCacheItem>} */ const scraper_cache = new Map()
@@ -12,7 +14,8 @@ let reqNum = 0
 //define server request handler
 const server = http.createServer(async (req,res)=>{
     console.log(req.url)
-    const url = new URL(req.url,`http://localhost:${PORT}`);
+    const url = new URL(req.url,BASEURL);
+    
     //only GET requests allowed
     if(req.method != "GET"){
         res.writeHead(400)
