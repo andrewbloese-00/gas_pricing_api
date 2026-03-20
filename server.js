@@ -3,7 +3,7 @@ import { ScrapeGasBuddyAPI } from "./scraper.js";
 import { readFile } from "fs/promises";
 
 const PORT = process.env.PORT || 8080
-const BASEURL = process.env.VERCEL_URL || RENDER_EXTERNAL_URL || "http://localhost:8080"
+const BASEURL = process.env.VERCEL_URL || process.env.RENDER_EXTERNAL_URL || "http://localhost:8080"
 
 const CACHE_LIVE_MS = 1_800_000 //expire cached data every 30 mins
 const CACHE_CLEANUP_EVERY_N = 10
