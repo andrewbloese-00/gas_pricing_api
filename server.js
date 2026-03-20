@@ -15,6 +15,7 @@ let reqNum = 0
 const server = http.createServer(async (req,res)=>{
     console.log(req.url)
     const url = new URL(req.url,BASEURL);
+    console.log(url)
     
     //only GET requests allowed
     if(req.method != "GET"){
@@ -34,9 +35,8 @@ const server = http.createServer(async (req,res)=>{
         
     }
 
-
     //only route is "gas_price"
-    if(url.pathname != "/gas_price"){
+    if(!url.pathname.includes("/gas_price")){
         res.writeHead(404)
         return res.end(JSON.stringify({
             error: `No route matches the path: "${url.pathname}"`
