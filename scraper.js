@@ -32,12 +32,26 @@ export async function ScrapeGasBuddyAPI(zipcode,fuelGrade){
             'accept-language': 'en-US,en;q=0.9',
         });
 
+        // block images, and other unnecessary media requests
+        await page.setRequestInterception(true);
+        page.on('request', (req) => {
+            const resourceType = req.resourceType();
+            if (['image', 'stylesheet', 'font', 'media'].includes(resourceType)) {
+                req.abort();
+            } else {
+                req.continue();
+            }
+        });
+
         //use args to construct request url 
         const gasbuddy_url = `${BASE_GASBUDDY_URL}?search=${zipcode}&fuel=${fuelGrade}&method=all&maxAge=0`
         await page.goto(gasbuddy_url,{
-            waitUntil: "networkidle2",
-            timeout: 10_000
+            waitUntil: "domcontentloaded",
+            timeout: 30_000
         })
+
+        //give page a second to hydrate
+        await wait(1000)
         const data = await page.evaluate(()=>{   
             function getNodesWithClassLike(pattern,data=[],root=document.body){
                 if(typeof root.className == "string"){
