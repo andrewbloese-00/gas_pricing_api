@@ -17,7 +17,11 @@ export async function ScrapeGasBuddyAPI(zipcode,fuelGrade){
     console.time("Scraper")
     //launch headless browser
     const browser = await puppeteer.launch({
-        headless: "shell"
+        headless: "shell",
+        args: [
+            "--no-sandbox",
+            "--disable-setuid-sandbox"
+        ]
     });
 
     try {
