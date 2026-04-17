@@ -53,30 +53,36 @@ export async function ScrapeGasBuddyAPI(zipcode,fuelGrade){
         //give page a second to hydrate
         await wait(1000)
         const data = await page.evaluate(()=>{   
-            function getNodesWithClassLike(pattern,data=[],root=document.body){
-                if(typeof root.className == "string"){
-                    if(pattern instanceof RegExp){
-                        if(pattern.test(root.className)){
-                            data.push(root)
-                        } 
-                    } else if(typeof pattern == "string"){
-                        if(root.className.includes(pattern)) {
-                            data.push(root)
-                        }
-                    }
-                }
-                for(const childNode of root.children){  
-                    getNodesWithClassLike(pattern,data,childNode)
-                }
-            }
+            // function getNodesWithClassLike(pattern,data=[],root=document.body){
+            //     if(typeof root.className == "string"){
+            //         if(pattern instanceof RegExp){
+            //             if(pattern.test(root.className)){
+            //                 data.push(root)
+            //             } 
+            //         } else if(typeof pattern == "string"){
+            //             if(root.className.includes(pattern)) {
+            //                 data.push(root)
+            //             }
+            //         }
+            //     }
+            //     for(const childNode of root.children){  
+            //         getNodesWithClassLike(pattern,data,childNode)
+            //     }
+            // }
             function getAveragePrice(){
-                let nodes = []
-                getNodesWithClassLike("StationDisplayPrice",nodes)
-                //get only spans that start with $
-                const prices = nodes
-                    .filter( n => n.tagName == "SPAN" && n.textContent[0] == "$")
-                    .map( span => Number(span.textContent.substring(1)))
-                    .filter( num => !isNaN(num))
+
+                const prices = Array.from(document.querySelectorAll("span"))
+                    .filter(s => s.textContent.trim()[0]=="$") //only price spans used
+                    .map( s => Number(s.textContent.trim().substring(1))) //convert to number
+                    .filter(n => !isNaN((n))) //filter invalid numbers
+
+                // let nodes = []
+                // getNodesWithClassLike("StationDisplayPrice",nodes)
+                // //get only spans that start with $
+                // const prices = nodes
+                //     .filter( n => n.tagName == "SPAN" && n.textContent[0] == "$")
+                //     .map( span => Number(span.textContent.substring(1)))
+                //     .filter( num => !isNaN(num))
     
     
                 const average = Number((
